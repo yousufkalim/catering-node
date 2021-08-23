@@ -14,7 +14,7 @@ const ratingSchema = new Schema(
       type: String,
       required: true,
     },
-    ipAddress: {
+    ip_address: {
       type: String,
       required: true,
     },

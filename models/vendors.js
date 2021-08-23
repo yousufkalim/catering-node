@@ -10,7 +10,7 @@ const vendorSchema = new Schema(
       type: String,
       required: true,
     },
-    companyName: {
+    company_name: {
       type: String,
       required: true,
     },
@@ -26,37 +26,37 @@ const vendorSchema = new Schema(
       type: String,
       required: true,
     },
-    facebookPage: {
+    facebook_page: {
       type: String,
       required: true,
     },
-    instagramPage: {
+    instagram_page: {
       type: String,
       required: true,
     },
-    businessType: {
+    business_type: {
       type: String,
       required: true,
     },
-    isDelivering: {
+    is_delivering: {
       type: Boolean,
       required: true,
     },
-    deliveryRadius: {
+    delivery_radius: {
       type: Number,
       required: true,
     },
-    foodType: [{ type: String }],
+    food_type: [{ type: String }],
     description: {
       type: String,
       required: true,
     },
-    menuImage: {
+    menu_image: {
       type: String,
       required: true,
     },
     ratings: [{ type: Schema.Types.ObjectId, ref: "Rating" }],
-    finalRating: {
+    final_rating: {
       type: Number,
       required: true,
     },
@@ -64,11 +64,11 @@ const vendorSchema = new Schema(
       type: Number,
       required: true,
     },
-    dineInOptions: {
+    dine_in_options: {
       type: String,
       required: true,
     },
-    maxPeopleLimit: {
+    max_people_limit: {
       type: Number,
       required: true,
     },
