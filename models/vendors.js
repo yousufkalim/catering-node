@@ -59,15 +59,18 @@ const vendorSchema = new Schema(
     final_rating: {
       type: Number,
       required: true,
+      default: 0,
     },
     price: {
       type: Number,
       required: true,
     },
-    dine_in_options: {
-      type: String,
-      required: true,
-    },
+    dine_in_options: [
+      {
+        type: String,
+        required: true,
+      },
+    ],
     max_people_limit: {
       type: Number,
       required: true,
