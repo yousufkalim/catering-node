@@ -1,7 +1,15 @@
 // Init
 const router = require("express").Router();
-const { register, getSingleVendor } = require("../controllers/vendors");
-const { validateVendor, isValidated } = require("../middleware/validators");
+const {
+  register,
+  updateVendor,
+  getSingleVendor,
+} = require("../controllers/vendors");
+const {
+  validateVendor,
+  validateUpdateVendor,
+  isValidated,
+} = require("../middleware/validators");
 const { upload } = require("../middleware/multer");
 
 // Multer
@@ -16,6 +24,9 @@ router.get("/:_id", getSingleVendor);
 
 // POST
 router.post("/", [vendor, validateVendor, isValidated], register);
+
+// PUT
+router.put("/:_id", [vendor, validateUpdateVendor, isValidated], updateVendor);
 
 // Export
 module.exports = router;
