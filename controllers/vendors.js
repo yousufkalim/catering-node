@@ -1,6 +1,7 @@
 const Vendor = require("../models/vendors");
 const bcrypt = require("bcryptjs");
 const salt = bcrypt.genSaltSync(10);
+const passport = require("passport");
 const fs = require("fs");
 
 // Register a Vendor
@@ -97,8 +98,6 @@ exports.getFilteredVendors = async (req, res) => {
     if (dine_in_options && dine_in_options.length > 0)
       condition.dine_in_options = dine_in_options === "true" ? true : false;
 
-    console.log("Condition", condition);
-
     const vendors = await Vendor.find(condition);
     res.status(200).send({
       msg: "Vendors Fetched",
@@ -108,4 +107,40 @@ exports.getFilteredVendors = async (req, res) => {
     console.log("Error ----> ", error);
     res.status(500).send("Something Failed");
   }
+};
+
+exports.login = (req, res, next) => {
+  // Authenticating with passport
+  passport.authenticate("local", (err, user, info) => {
+    if (err) {
+      // If passport error
+      return next(err);
+    } else if (!user) {
+      // If login error
+      res.status(401).send(info.message);
+    } else {
+      // If Ok then logging in
+      req.logIn(user, (err) => {
+        if (err) {
+          return next(err);
+        }
+
+        // All done
+        res.status(200).json({ success: true, user: user });
+      });
+    }
+  })(req, res, next);
+};
+
+exports.logout = (req, res) => {
+  req.logOut();
+  res.status(200).json({
+    success: true,
+    message: "You are logged out successfully",
+  });
+};
+
+exports.confirmAuth = (req, res) => {
+  // If user authenticated
+  res.status(200).send({ msg: "User Authenticated", user: req.user });
 };

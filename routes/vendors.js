@@ -5,6 +5,9 @@ const {
   updateVendor,
   getSingleVendor,
   getFilteredVendors,
+  login,
+  logout,
+  confirmAuth,
 } = require("../controllers/vendors");
 const {
   validateVendor,
@@ -12,6 +15,7 @@ const {
   isValidated,
 } = require("../middleware/validators");
 const { upload } = require("../middleware/multer");
+const { checkAuth } = require("../middleware/checkAuth");
 
 // Multer
 const vendor = upload.fields([
@@ -22,9 +26,12 @@ const vendor = upload.fields([
 // Routes
 // GET
 router.get("/filtered-vendors", getFilteredVendors);
+router.get("/check-auth", checkAuth, confirmAuth);
+router.get("/logout", logout);
 router.get("/:_id", getSingleVendor);
 
 // POST
+router.post("/login", login);
 router.post("/", [vendor, validateVendor, isValidated], register);
 
 // PUT
