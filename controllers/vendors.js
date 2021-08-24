@@ -82,3 +82,30 @@ exports.getSingleVendor = async (req, res) => {
     res.status(500).send("Something Failed");
   }
 };
+
+exports.getFilteredVendors = async (req, res) => {
+  try {
+    const { restaurant_type, price, is_delivering, dine_in_options } =
+      req.query;
+    const condition = {};
+
+    if (price) condition.price = { $lte: parseInt(price) };
+    if (restaurant_type && restaurant_type.length > 0)
+      condition.food_type = { $in: restaurant_type };
+    if (is_delivering && is_delivering.length > 0)
+      condition.is_delivering = is_delivering === "true" ? true : false;
+    if (dine_in_options && dine_in_options.length > 0)
+      condition.dine_in_options = dine_in_options === "true" ? true : false;
+
+    console.log("Condition", condition);
+
+    const vendors = await Vendor.find(condition);
+    res.status(200).send({
+      msg: "Vendors Fetched",
+      vendors,
+    });
+  } catch (error) {
+    console.log("Error ----> ", error);
+    res.status(500).send("Something Failed");
+  }
+};

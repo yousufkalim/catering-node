@@ -4,6 +4,7 @@ const {
   register,
   updateVendor,
   getSingleVendor,
+  getFilteredVendors,
 } = require("../controllers/vendors");
 const {
   validateVendor,
@@ -20,6 +21,7 @@ const vendor = upload.fields([
 
 // Routes
 // GET
+router.get("/filtered-vendors", getFilteredVendors);
 router.get("/:_id", getSingleVendor);
 
 // POST
