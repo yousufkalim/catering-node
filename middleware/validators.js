@@ -50,6 +50,15 @@ exports.validateExample = [
   check("number", "Number is required.").notEmpty().trim(),
 ];
 
+// Rating Validation
+exports.validateRating = [
+  check("username", "Name is required.").notEmpty().trim(),
+  check("rating", "Rating is required.").isNumeric().notEmpty(),
+  check("comment", "Comment is required.").notEmpty().trim(),
+  check("ip", "IP is required.").notEmpty().trim(),
+  check("vendorId", "Vendor is required.").notEmpty().trim(),
+];
+
 /*
 ======================
 Result
