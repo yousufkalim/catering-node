@@ -65,12 +65,10 @@ const vendorSchema = new Schema(
       type: Number,
       required: true,
     },
-    dine_in_options: [
-      {
-        type: String,
-        required: true,
-      },
-    ],
+    dine_in_options: {
+      type: Boolean,
+      required: true,
+    },
     max_people_limit: {
       type: Number,
       required: true,

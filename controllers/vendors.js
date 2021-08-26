@@ -1,6 +1,8 @@
 const Vendor = require("../models/vendors");
-var bcrypt = require("bcryptjs");
-var salt = bcrypt.genSaltSync(10);
+const bcrypt = require("bcryptjs");
+const salt = bcrypt.genSaltSync(10);
+const passport = require("passport");
+const fs = require("fs");
 
 // Register a Vendor
 exports.register = async (req, res) => {
@@ -30,6 +32,46 @@ exports.register = async (req, res) => {
   }
 };
 
+exports.updateVendor = async (req, res) => {
+  try {
+    const body = { ...req.body };
+
+    const vendorInDb = await Vendor.findById(req.params._id);
+    if (!vendorInDb) return res.status(404).send("Vendor Not Found");
+
+    if (req.files["image"] && req.files["image"][0]) {
+      body.image = req.files["image"][0].path;
+    }
+    if (req.files["menu_image"] && req.files["menu_image"][0]) {
+      body.menu_image = req.files["menu_image"][0].path;
+    }
+
+    const vendor = await Vendor.findByIdAndUpdate(
+      req.params._id,
+      {
+        $set: body,
+      },
+      { new: true }
+    );
+
+    if (req.files["image"] && req.files["image"][0]) {
+      fs.unlink(vendorInDb.image, (err) => {
+        console.log(err);
+      });
+    }
+    if (req.files["menu_image"] && req.files["menu_image"][0]) {
+      fs.unlink(vendorInDb.menu_image, (err) => {
+        console.log(err);
+      });
+    }
+
+    res.status(200).send({ msg: "Vendor Updated", vendor });
+  } catch (error) {
+    console.log("Error ----> ", error);
+    res.status(500).send("Something Failed");
+  }
+};
+
 exports.getSingleVendor = async (req, res) => {
   try {
     const vendor = await Vendor.findById(req.params._id);
@@ -40,4 +82,65 @@ exports.getSingleVendor = async (req, res) => {
     console.log("Error ----> ", error);
     res.status(500).send("Something Failed");
   }
+};
+
+exports.getFilteredVendors = async (req, res) => {
+  try {
+    const { restaurant_type, price, is_delivering, dine_in_options } =
+      req.query;
+    const condition = {};
+
+    if (price) condition.price = { $lte: parseInt(price) };
+    if (restaurant_type && restaurant_type.length > 0)
+      condition.food_type = { $in: restaurant_type };
+    if (is_delivering && is_delivering.length > 0)
+      condition.is_delivering = is_delivering === "true" ? true : false;
+    if (dine_in_options && dine_in_options.length > 0)
+      condition.dine_in_options = dine_in_options === "true" ? true : false;
+
+    const vendors = await Vendor.find(condition);
+    res.status(200).send({
+      msg: "Vendors Fetched",
+      vendors,
+    });
+  } catch (error) {
+    console.log("Error ----> ", error);
+    res.status(500).send("Something Failed");
+  }
+};
+
+exports.login = (req, res, next) => {
+  // Authenticating with passport
+  passport.authenticate("local", (err, user, info) => {
+    if (err) {
+      // If passport error
+      return next(err);
+    } else if (!user) {
+      // If login error
+      res.status(401).send(info.message);
+    } else {
+      // If Ok then logging in
+      req.logIn(user, (err) => {
+        if (err) {
+          return next(err);
+        }
+
+        // All done
+        res.status(200).json({ success: true, user: user });
+      });
+    }
+  })(req, res, next);
+};
+
+exports.logout = (req, res) => {
+  req.logOut();
+  res.status(200).json({
+    success: true,
+    message: "You are logged out successfully",
+  });
+};
+
+exports.confirmAuth = (req, res) => {
+  // If user authenticated
+  res.status(200).send({ msg: "User Authenticated", user: req.user });
 };
