@@ -3,6 +3,7 @@ const bcrypt = require("bcryptjs");
 const salt = bcrypt.genSaltSync(10);
 const passport = require("passport");
 const fs = require("fs");
+const geoLib = require("geo-lib");
 
 // Register a Vendor
 exports.register = async (req, res) => {
@@ -86,7 +87,7 @@ exports.getSingleVendor = async (req, res) => {
 
 exports.getFilteredVendors = async (req, res) => {
   try {
-    const { restaurant_type, price, is_delivering, dine_in_options } =
+    const { restaurant_type, price, is_delivering, dine_in_options, lat, lng } =
       req.query;
     const condition = {};
 
@@ -98,10 +99,23 @@ exports.getFilteredVendors = async (req, res) => {
     if (dine_in_options && dine_in_options.length > 0)
       condition.dine_in_options = dine_in_options === "true" ? true : false;
 
+    let filteredVendors = [];
     const vendors = await Vendor.find(condition);
+    vendors.forEach((item) => {
+      let result = geoLib.distance({
+        p1: { lat: parseInt(lat), lon: parseInt(lng) },
+        p2: {
+          lat: parseInt(item.address.lat),
+          lon: parseInt(item.address.lng),
+        },
+      });
+      const miles = result.distance / 1.609;
+      if (miles <= 12) filteredVendors.push(item);
+    });
+
     res.status(200).send({
       msg: "Vendors Fetched",
-      vendors,
+      vendors: filteredVendors,
     });
   } catch (error) {
     console.log("Error ----> ", error);
