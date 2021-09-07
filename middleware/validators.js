@@ -32,7 +32,6 @@ exports.validateVendor = [
   check("address.lat", "Latitude is required.").notEmpty(),
   check("address.lng", "Longitude is required.").notEmpty(),
   check("address.city", "City is required.").notEmpty(),
-  check("address.postal_code", "Postal Code is required.").notEmpty(),
   check("address.label", "Address Label is required.").notEmpty(),
 ];
 
@@ -58,7 +57,6 @@ exports.validateUpdateVendor = [
   check("address.lat", "Latitude is required.").notEmpty(),
   check("address.lng", "Longitude is required.").notEmpty(),
   check("address.city", "City is required.").notEmpty(),
-  check("address.postal_code", "Postal Code is required.").notEmpty(),
   check("address.label", "Address Label is required.").notEmpty(),
 ];
 
