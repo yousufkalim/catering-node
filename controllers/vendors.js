@@ -4,6 +4,7 @@ const salt = bcrypt.genSaltSync(10);
 const passport = require("passport");
 const fs = require("fs");
 const geoLib = require("geo-lib");
+const jwt = require("jsonwebtoken");
 
 // Register a Vendor
 exports.register = async (req, res) => {
@@ -26,7 +27,18 @@ exports.register = async (req, res) => {
     const vendor = new Vendor(body);
     await vendor.save();
 
-    res.status(200).send({ msg: "Vendor Registered" });
+    jwt.sign(
+      { user: { id: vendor.id } },
+      process.env.JSONSECRET,
+      { expiresIn: 360000 },
+      (err, token) => {
+        if (err) throw err;
+
+        res.json({ user: vendor, token });
+      }
+    );
+
+    // res.status(200).send({ msg: "Vendor Registered" });
   } catch (error) {
     console.log("Error ----> ", error);
     res.status(500).send("Something Failed");
@@ -123,27 +135,38 @@ exports.getFilteredVendors = async (req, res) => {
   }
 };
 
-exports.login = (req, res, next) => {
-  // Authenticating with passport
-  passport.authenticate("local", (err, user, info) => {
-    if (err) {
-      // If passport error
-      return next(err);
-    } else if (!user) {
-      // If login error
-      res.status(401).send(info.message);
-    } else {
-      // If Ok then logging in
-      req.logIn(user, (err) => {
-        if (err) {
-          return next(err);
-        }
-
-        // All done
-        res.status(200).json({ success: true, user: user });
-      });
+exports.login = async (req, res) => {
+  const { email, password } = req.body;
+  try {
+    // Check User Exists
+    let vendor = await Vendor.findOne({ email }).select("+password");
+    if (!vendor) {
+      return res.status(404).json("Vendor Does Not Exist");
     }
-  })(req, res, next);
+
+    // Match Password
+    const isMatch = await bcrypt.compare(password, vendor.password);
+    if (!isMatch) {
+      return res.status(400).json("Invalid Password");
+    }
+
+    // Generate Token
+
+    jwt.sign(
+      { user: { id: vendor.id } },
+      process.env.JSONSECRET,
+      { expiresIn: 360000 },
+      (err, token) => {
+        if (err) throw err;
+
+        res.json({ user: vendor, token });
+      }
+    );
+  } catch (err) {
+    // Error
+    console.log("Error ----> ", error);
+    res.status(500).send("Something Failed");
+  }
 };
 
 exports.logout = (req, res) => {
@@ -154,7 +177,8 @@ exports.logout = (req, res) => {
   });
 };
 
-exports.confirmAuth = (req, res) => {
+exports.confirmAuth = async (req, res) => {
   // If user authenticated
-  res.status(200).send({ msg: "User Authenticated", user: req.user });
+  let user = await Vendor.findById(req.user.id);
+  res.status(200).send({ msg: "User Authenticated", user });
 };

@@ -9,6 +9,7 @@ const vendorSchema = new Schema(
     password: {
       type: String,
       required: true,
+      select: false,
     },
     company_name: {
       type: String,
