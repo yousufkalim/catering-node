@@ -5,6 +5,7 @@ const router = require("express").Router();
 router.use("/example", require("./example"));
 router.use("/vendors", require("./vendors"));
 router.use("/ratings", require("./ratings"));
+router.use("/places", require("./places"));
 
 // Export
 module.exports = router;
