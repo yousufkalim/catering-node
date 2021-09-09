@@ -87,7 +87,7 @@ exports.updateVendor = async (req, res) => {
 
 exports.getSingleVendor = async (req, res) => {
   try {
-    const vendor = await Vendor.findById(req.params._id);
+    const vendor = await Vendor.findById(req.params._id).populate("ratings");
     if (!vendor) return res.status(404).send("Vendor does not exist");
 
     res.status(200).send({ msg: "Vendor Fetched", vendor });
