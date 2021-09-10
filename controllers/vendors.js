@@ -164,7 +164,7 @@ exports.login = async (req, res) => {
     );
   } catch (err) {
     // Error
-    console.log("Error ----> ", error);
+    console.log("Error ----> ", err);
     res.status(500).send("Something Failed");
   }
 };
