@@ -99,11 +99,22 @@ exports.getSingleVendor = async (req, res) => {
 
 exports.getFilteredVendors = async (req, res) => {
   try {
-    const { restaurant_type, price, is_delivering, dine_in_options, lat, lng } =
-      req.query;
+    const {
+      restaurant_type,
+      lower_range,
+      upper_range,
+      is_delivering,
+      dine_in_options,
+      lat,
+      lng,
+    } = req.query;
     const condition = {};
 
-    if (price) condition.price = { $lte: parseInt(price) };
+    if (lower_range && upper_range)
+      condition.price = {
+        $lte: parseInt(upper_range),
+        $gte: parseInt(lower_range),
+      };
     if (restaurant_type && restaurant_type.length > 0)
       condition.food_type = { $in: restaurant_type };
     if (is_delivering && is_delivering.length > 0)
