@@ -61,7 +61,7 @@ exports.updateVendor = async (req, res) => {
       body.menu_image = req.files["menu_image"][0].path;
     }
 
-    if (body.new_password?.length > 1 && body.old_password?.length > 1) {
+    if (body.new_password && body.old_password) {
       console.log(vendorInDb.password);
       const matches = await bcrypt.compare(
         body.old_password,
