@@ -10,9 +10,8 @@ exports.publishRating = async (req, res) => {
     if (!vendorInDb) return res.status(404).send("Vendor does not exist");
 
     const now = new moment();
-    let ratingInDb = await Ratings.find({ ip_address: ip });
-    ratingInDb = ratingInDb.reverse();
-    ratingInDb = ratingInDb[0];
+    let ratingInDb = await Ratings.find({ ip_address: ip, vendor: vendorId });
+    ratingInDb = ratingInDb.pop();
     if (
       ratingInDb &&
       moment.duration(now.diff(new moment(ratingInDb.createdAt))).as("hours") <
