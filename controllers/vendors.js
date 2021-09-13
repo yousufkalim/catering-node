@@ -49,7 +49,9 @@ exports.updateVendor = async (req, res) => {
   try {
     const body = { ...req.body };
 
-    const vendorInDb = await Vendor.findById(req.params._id);
+    const vendorInDb = await Vendor.findById(req.params._id).select(
+      "+password"
+    );
     if (!vendorInDb) return res.status(404).send("Vendor Not Found");
 
     if (req.files["image"] && req.files["image"][0]) {
@@ -58,6 +60,20 @@ exports.updateVendor = async (req, res) => {
     if (req.files["menu_image"] && req.files["menu_image"][0]) {
       body.menu_image = req.files["menu_image"][0].path;
     }
+
+    if (body.new_password?.length > 1 && body.old_password?.length > 1) {
+      console.log(vendorInDb.password);
+      const matches = await bcrypt.compare(
+        body.old_password,
+        vendorInDb.password
+      );
+      if (!matches)
+        return res.status(400).send("Password does not match old password");
+
+      body.password = bcrypt.hashSync(body.new_password, salt);
+    }
+    delete body.old_password;
+    delete body.new_password;
 
     const vendor = await Vendor.findByIdAndUpdate(
       req.params._id,
