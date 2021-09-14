@@ -1,7 +1,6 @@
 const Vendor = require("../models/vendors");
 const bcrypt = require("bcryptjs");
 const salt = bcrypt.genSaltSync(10);
-const passport = require("passport");
 const fs = require("fs");
 const geoLib = require("geo-lib");
 const jwt = require("jsonwebtoken");
@@ -34,11 +33,9 @@ exports.register = async (req, res) => {
       (err, token) => {
         if (err) throw err;
 
-        res.json({ user: vendor, token });
+        res.status(200).json({ user: vendor, token });
       }
     );
-
-    // res.status(200).send({ msg: "Vendor Registered" });
   } catch (error) {
     console.log("Error ----> ", error);
     res.status(500).send("Something Failed");
@@ -94,7 +91,7 @@ exports.updateVendor = async (req, res) => {
       });
     }
 
-    res.status(200).send({ msg: "Vendor Updated", vendor });
+    res.status(200).json({ msg: "Vendor Updated", vendor });
   } catch (error) {
     console.log("Error ----> ", error);
     res.status(500).send("Something Failed");
@@ -106,7 +103,7 @@ exports.getSingleVendor = async (req, res) => {
     const vendor = await Vendor.findById(req.params._id).populate("ratings");
     if (!vendor) return res.status(404).send("Vendor does not exist");
 
-    res.status(200).send({ msg: "Vendor Fetched", vendor });
+    res.status(200).json({ msg: "Vendor Fetched", vendor });
   } catch (error) {
     console.log("Error ----> ", error);
     res.status(500).send("Something Failed");
@@ -152,7 +149,7 @@ exports.getFilteredVendors = async (req, res) => {
       if (miles <= 12) filteredVendors.push(item);
     });
 
-    res.status(200).send({
+    res.status(200).json({
       msg: "Vendors Fetched",
       vendors: filteredVendors,
     });
@@ -186,7 +183,7 @@ exports.login = async (req, res) => {
       (err, token) => {
         if (err) throw err;
 
-        res.json({ user: vendor, token });
+        res.status(200).json({ user: vendor, token });
       }
     );
   } catch (err) {
@@ -196,16 +193,8 @@ exports.login = async (req, res) => {
   }
 };
 
-exports.logout = (req, res) => {
-  req.logOut();
-  res.status(200).json({
-    success: true,
-    message: "You are logged out successfully",
-  });
-};
-
 exports.confirmAuth = async (req, res) => {
   // If user authenticated
   let user = await Vendor.findById(req.user.id);
-  res.status(200).send({ msg: "User Authenticated", user });
+  res.status(200).json({ msg: "User Authenticated", user });
 };

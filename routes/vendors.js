@@ -6,7 +6,6 @@ const {
   getSingleVendor,
   getFilteredVendors,
   login,
-  logout,
   confirmAuth,
 } = require("../controllers/vendors");
 const {
@@ -27,7 +26,6 @@ const vendor = upload.fields([
 // GET
 router.get("/filtered-vendors", getFilteredVendors);
 router.get("/check-auth", checkAuth, confirmAuth);
-router.get("/logout", logout);
 router.get("/:_id", getSingleVendor);
 
 // POST
