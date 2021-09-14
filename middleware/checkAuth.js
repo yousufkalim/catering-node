@@ -11,7 +11,7 @@ exports.checkAuth = (req, res, next) => {
   }
 
   try {
-    const decoded = jwt.verify(token, "jwt");
+    const decoded = jwt.verify(token, process.env.JSONSECRET);
     req.user = decoded.user;
 
     // If user authenticated

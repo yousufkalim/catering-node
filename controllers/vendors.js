@@ -46,7 +46,9 @@ exports.updateVendor = async (req, res) => {
   try {
     const body = { ...req.body };
 
-    const vendorInDb = await Vendor.findById(req.params._id);
+    const vendorInDb = await Vendor.findById(req.params._id).select(
+      "+password"
+    );
     if (!vendorInDb) return res.status(404).send("Vendor Not Found");
 
     if (req.files["image"] && req.files["image"][0]) {
@@ -55,6 +57,20 @@ exports.updateVendor = async (req, res) => {
     if (req.files["menu_image"] && req.files["menu_image"][0]) {
       body.menu_image = req.files["menu_image"][0].path;
     }
+
+    if (body.new_password && body.old_password) {
+      console.log(vendorInDb.password);
+      const matches = await bcrypt.compare(
+        body.old_password,
+        vendorInDb.password
+      );
+      if (!matches)
+        return res.status(400).send("Password does not match old password");
+
+      body.password = bcrypt.hashSync(body.new_password, salt);
+    }
+    delete body.old_password;
+    delete body.new_password;
 
     const vendor = await Vendor.findByIdAndUpdate(
       req.params._id,
@@ -96,11 +112,22 @@ exports.getSingleVendor = async (req, res) => {
 
 exports.getFilteredVendors = async (req, res) => {
   try {
-    const { restaurant_type, price, is_delivering, dine_in_options, lat, lng } =
-      req.query;
+    const {
+      restaurant_type,
+      lower_range,
+      upper_range,
+      is_delivering,
+      dine_in_options,
+      lat,
+      lng,
+    } = req.query;
     const condition = {};
 
-    if (price) condition.price = { $lte: parseInt(price) };
+    if (lower_range && upper_range)
+      condition.price = {
+        $lte: parseInt(upper_range),
+        $gte: parseInt(lower_range),
+      };
     if (restaurant_type && restaurant_type.length > 0)
       condition.food_type = { $in: restaurant_type };
     if (is_delivering && is_delivering.length > 0)
@@ -161,7 +188,7 @@ exports.login = async (req, res) => {
     );
   } catch (err) {
     // Error
-    console.log("Error ----> ", error);
+    console.log("Error ----> ", err);
     res.status(500).send("Something Failed");
   }
 };
