@@ -11,5 +11,5 @@ exports.getPlacesFromQuery = async (req, res) => {
       )}&inputtype=textquery&fields=formatted_address,name,geometry&key=${placesKey}`
     // &locationbias=circle%3A1800000%4039.5501%2C-105.7821`
   );
-  res.status(200).send({ msg: "Ok", places: data.candidates });
+  res.status(200).json({ msg: "Ok", places: data.candidates });
 };

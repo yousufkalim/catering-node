@@ -41,7 +41,7 @@ exports.publishRating = async (req, res) => {
     );
     await vendorInDb.save();
 
-    res.status(200).send({ msg: "ok", review: newRating });
+    res.status(200).json({ msg: "ok", review: newRating });
   } catch (error) {
     console.log("Error ----> ", error);
     res.status(500).send("Something Failed");
