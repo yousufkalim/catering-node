@@ -17,7 +17,6 @@ const vendorSchema = new Schema(
     },
     phone: {
       type: String,
-      required: true,
     },
     image: {
       type: String,
@@ -25,15 +24,12 @@ const vendorSchema = new Schema(
     },
     website: {
       type: String,
-      required: true,
     },
     facebook_page: {
       type: String,
-      required: true,
     },
     instagram_page: {
       type: String,
-      required: true,
     },
     business_type: {
       type: String,
@@ -45,7 +41,6 @@ const vendorSchema = new Schema(
     },
     delivery_radius: {
       type: Number,
-      required: true,
     },
     food_type: [{ type: String }],
     description: {
@@ -54,17 +49,14 @@ const vendorSchema = new Schema(
     },
     menu_image: {
       type: String,
-      required: true,
     },
     ratings: [{ type: Schema.Types.ObjectId, ref: "Rating" }],
     final_rating: {
       type: Number,
-      required: true,
       default: 0,
     },
     price: {
       type: Number,
-      required: true,
     },
     dine_in_options: {
       type: Boolean,
@@ -72,7 +64,6 @@ const vendorSchema = new Schema(
     },
     max_people_limit: {
       type: Number,
-      required: true,
     },
     address: {
       lat: {
@@ -89,7 +80,6 @@ const vendorSchema = new Schema(
       },
       city: {
         type: String,
-        required: true,
       },
     },
   },

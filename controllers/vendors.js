@@ -5,6 +5,7 @@ const passport = require("passport");
 const fs = require("fs");
 const geoLib = require("geo-lib");
 const jwt = require("jsonwebtoken");
+const xlsxFile = require("read-excel-file/node");
 
 // Register a Vendor
 exports.register = async (req, res) => {
@@ -39,6 +40,41 @@ exports.register = async (req, res) => {
     );
 
     // res.status(200).send({ msg: "Vendor Registered" });
+  } catch (error) {
+    console.log("Error ----> ", error);
+    res.status(500).send("Something Failed");
+  }
+};
+
+exports.bulkRegister = async (req, res) => {
+  const hashedPassword = bcrypt.hashSync("12345678", 10);
+  try {
+    xlsxFile(req.file.path).then(async (rows) => {
+      rows.shift();
+      let catererObject = rows.map((item, index) => {
+        return {
+          company_name: item[0],
+          description: `${item[0]} is a restaurant which is serving a lot of different varieties of food : Kabob, salads, sandwiches. Please feel free to join us for your catering events.`,
+          phone: item[3],
+          business_type: "caterer",
+          facebook_page: item[4],
+          dine_in_options: item[5] === "yes" ? true : false,
+          is_delivering: item[7] === "yes" ? true : false,
+          email: item[8],
+          password: hashedPassword,
+          website: item[9],
+          image: "uploads/1631095006635-rice.jpg",
+          address: {
+            lat: item[2]?.split(", ")[0],
+            lng: item[2]?.split(", ")[1],
+            label: item[1],
+          },
+        };
+      });
+
+      const result = await Vendor.insertMany(catererObject);
+      res.json(result);
+    });
   } catch (error) {
     console.log("Error ----> ", error);
     res.status(500).send("Something Failed");

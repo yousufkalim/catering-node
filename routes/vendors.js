@@ -2,6 +2,7 @@
 const router = require("express").Router();
 const {
   register,
+  bulkRegister,
   updateVendor,
   getSingleVendor,
   getFilteredVendors,
@@ -33,6 +34,7 @@ router.get("/:_id", getSingleVendor);
 // POST
 router.post("/login", login);
 router.post("/", [vendor, validateVendor, isValidated], register);
+router.post("/bulk", upload.single("caterers"), bulkRegister);
 
 // PUT
 router.put("/:_id", [vendor, validateUpdateVendor, isValidated], updateVendor);
