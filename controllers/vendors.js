@@ -62,8 +62,8 @@ exports.bulkRegister = async (req, res) => {
           website: item[9],
           image: "uploads/1631095006635-rice.jpg",
           address: {
-            lat: item[2]?.split(", ")[0],
-            lng: item[2]?.split(", ")[1],
+            lat: item[2].split(", ")[0],
+            lng: item[2].split(", ")[1],
             label: item[1],
           },
         };
