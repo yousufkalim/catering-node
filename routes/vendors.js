@@ -11,7 +11,7 @@ const {
 } = require("../controllers/vendors");
 const {
   validateVendor,
-  validateUpdateVendor,
+  // validateUpdateVendor,
   isValidated,
 } = require("../middleware/validators");
 const { upload } = require("../middleware/multer");
@@ -35,7 +35,8 @@ router.post("/", [vendor, validateVendor, isValidated], register);
 router.post("/bulk", upload.single("caterers"), bulkRegister);
 
 // PUT
-router.put("/:_id", [vendor, validateUpdateVendor, isValidated], updateVendor);
+// [vendor, validateUpdateVendor, isValidated];
+router.put("/:_id", updateVendor);
 
 // Export
 module.exports = router;
