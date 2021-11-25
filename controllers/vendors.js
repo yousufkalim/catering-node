@@ -182,7 +182,7 @@ exports.getFilteredVendors = async (req, res) => {
         },
       });
       const miles = result.distance / 1.609;
-      if (miles <= 12) filteredVendors.push(item);
+      if (miles <= 25) filteredVendors.push(item);
     });
 
     res.status(200).json({
